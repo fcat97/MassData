@@ -196,14 +196,6 @@ class LogInScreen : AndroidScreen() {
                             )
                         }
                     }
-
-                    Spacer(modifier = Modifier.height(large))
-                    Text(text = stringResource(id = R.string.dont_have_account))
-                    TextButton(onClick = {
-                        navigator.push(SignUpScreen())
-                    }) {
-                        Text(text = stringResource(id = R.string.sign_up))
-                    }
                 }
             }
         }

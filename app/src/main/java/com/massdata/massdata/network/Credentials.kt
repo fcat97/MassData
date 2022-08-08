@@ -16,4 +16,5 @@ data class SignUpCredential(
     val password: String,
     val accountId: String,
     val phoneNumber: String,
+    val type: String
 )

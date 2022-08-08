@@ -9,4 +9,8 @@
     <string name="dont_have_account">Don\'t have an account?</string>
     <string name="already_have_an_account">Already have an account?</string>
     <string name="sign_out">Sign Out</string>
+    <string name="add_user">Add User</string>
+    <string name="type">Type</string>
+    <string name="clear_fields">Clear Fields</string>
+    <string name="add_another">Add Another User</string>
 </resources>

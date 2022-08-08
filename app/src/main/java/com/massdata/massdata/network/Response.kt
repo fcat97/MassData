@@ -1,6 +1,12 @@
 package com.massdata.massdata.network
 
+import com.google.gson.JsonObject
+import okhttp3.ResponseBody
+import retrofit2.Converter
+import retrofit2.Response
+import java.io.IOException
 import java.util.*
+
 
 data class ApiQueryResponse(
     val statusCode: Int,
@@ -10,6 +16,20 @@ data class ApiQueryResponse(
 data class SignUpResponse(
     val statusCode: Int,
     val message: String
+)
+
+data class SignUpUnsuccessfulResponse(
+    val type: String = "",
+    val title: String = "",
+    val status: Int = 0,
+    val traceId: String = "",
+    val errors: Error = Error()
+)
+
+data class Error(
+    val Email: List<String> = emptyList(),
+    val Password: List<String> = emptyList(),
+    val PhoneNumber: List<String> = emptyList()
 )
 
 data class LogInResponse(
@@ -59,4 +79,9 @@ data class TokenValidityResponse(
     val email: String,
     val id: String,
     val playerId: String
+)
+
+data class ShortResponse(
+    val statusCode: Int = 0,
+    val message: String = "Parse Failed"
 )

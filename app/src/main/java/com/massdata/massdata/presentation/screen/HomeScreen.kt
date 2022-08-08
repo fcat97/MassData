@@ -2,10 +2,7 @@ package com.massdata.massdata.presentation.screen
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.*
-import androidx.compose.material.Button
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Scaffold
-import androidx.compose.material.Text
+import androidx.compose.material.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.rememberCoroutineScope
@@ -43,6 +40,9 @@ class HomeScreen : AndroidScreen() {
         // if expires, send to log in screen
         // else keep in this screen
         LaunchedEffect(key1 = true) {
+            // show intro
+            delay(500)
+
             // go to log in screen if previous token not found
             val pref = dataStore.data.firstOrNull()
             if (pref == null) {
@@ -64,8 +64,6 @@ class HomeScreen : AndroidScreen() {
                     return@LaunchedEffect
                 }
 
-                viewModel.startExpireClock(tokenExpireTime)
-
                 viewModel.validateCredentials(
                     token = token,
                     refreshToken = refreshToken,
@@ -75,13 +73,10 @@ class HomeScreen : AndroidScreen() {
                         }
                     },
                     onSuccess = {
-
+                        viewModel.startExpireClock(tokenExpireTime)
                     },
                     onExpire = {
-                        coroutineScope.launch {
-                            delay(500)
-                            navigator.push(LogInScreen())
-                        }
+                        navigator.push(LogInScreen())
                     }
                 )
             }
@@ -131,13 +126,22 @@ class HomeScreen : AndroidScreen() {
                         )
 
                         Spacer(modifier = Modifier.height(large))
-                        Button(onClick = {
+                        TextButton(onClick = {
                             coroutineScope.launch {
                                 DataStoreUtil.saveData(dataStore, LogInResponse.getEmptyResponse())
                                 navigator.push(LogInScreen())
                             }
                         }) {
                             Text(text = stringResource(id = R.string.sign_out))
+                        }
+
+                        Spacer(modifier = Modifier.height(large + large))
+                        Button(
+                            onClick = {
+                                navigator.push(AddUserScreen())
+                            }
+                        ) {
+                            Text(text = stringResource(id = R.string.add_user))
                         }
                     }
                 }

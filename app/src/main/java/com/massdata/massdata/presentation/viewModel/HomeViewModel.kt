@@ -36,47 +36,51 @@ class HomeViewModel(
         onSuccess: () -> Unit,
         onExpire: () -> Unit
     ) {
-        val testToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9." +
-                "MjQwLCJleHAiOjE2NTk4Nzc4NDAsImlhdCI6MTY1OTg1NjI0MCwiaXNzIjoiKG1kbC5uZXRkZXZlbG9wZXJzKSIsImF1ZCI6IlRQR19BUE" +
-                "eyJpZCI6ImQ1ZWE5MTkzLWQ0NTktNGNmZC1hZDkzLTNmZjRhMWY5NmI2NSIsInVzZXJFbWFpbCI6InRwZ2FkbWluQG1hc3NkYXRhLmNvbS" +
-                "IsIm5hbWUiOiJTdXBlciBBZG1pbiIsIlBsYXllcklkIjoiMjU0MTM5NzAyNSIsInJvbGUiOiJTdXBlckFkbWluIiwibmJmIjoxNjU5ODU2" +
-                "lfVXNlciJ9.pX0aXk1CMBSwa1YCwudCRoqPZEQM0y2gu94wJju_-Xc"
+        try {
+            val testToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9." +
+                    "MjQwLCJleHAiOjE2NTk4Nzc4NDAsImlhdCI6MTY1OTg1NjI0MCwiaXNzIjoiKG1kbC5uZXRkZXZlbG9wZXJzKSIsImF1ZCI6IlRQR19BUE" +
+                    "eyJpZCI6ImQ1ZWE5MTkzLWQ0NTktNGNmZC1hZDkzLTNmZjRhMWY5NmI2NSIsInVzZXJFbWFpbCI6InRwZ2FkbWluQG1hc3NkYXRhLmNvbS" +
+                    "IsIm5hbWUiOiJTdXBlciBBZG1pbiIsIlBsYXllcklkIjoiMjU0MTM5NzAyNSIsInJvbGUiOiJTdXBlckFkbWluIiwibmJmIjoxNjU5ODU2" +
+                    "lfVXNlciJ9.pX0aXk1CMBSwa1YCwudCRoqPZEQM0y2gu94wJju_-Xc"
 
-        viewModelScope.launch(Dispatchers.IO) {
-            val response = service.isTokenValid("Bearer $token").awaitResponse()
-            if (response.isSuccessful) {
-                playerID = response.body()?.playerId ?: ""
+            viewModelScope.launch(Dispatchers.IO) {
+                val response = service.isTokenValid("Bearer $token").awaitResponse()
+                if (response.isSuccessful) {
+                    playerID = response.body()?.playerId ?: ""
 
-                if (response.code() == 200) {
-                    Log.d(TAG, "validateCredentials: 1")
-                    onSuccess()
-                    return@launch
-                }
+                    if (response.code() == 200) {
+                        Log.d(TAG, "validateCredentials: 1")
+                        onSuccess()
+                        return@launch
+                    }
 
-                // token expired
-                if (response.code() == 401) {
-                    Log.d(TAG, "validateCredentials: 2")
-                    refreshToken(RefreshTokenCredential(token, refreshToken)).let {
-                        Log.d(TAG, "validateCredentials: 3")
-                        if (it.isSuccessful && it.code() == 200) {
-                            Log.d(TAG, "validateCredentials: 4")
-                            it.body()?.let { newToken ->
-                                Log.d(TAG, "validateCredentials: 5")
-                                onRefreshToken(newToken)
+                    // token expired
+                    if (response.code() == 401) {
+                        Log.d(TAG, "validateCredentials: 2")
+                        refreshToken(RefreshTokenCredential(token, refreshToken)).let {
+                            Log.d(TAG, "validateCredentials: 3")
+                            if (it.isSuccessful && it.code() == 200) {
+                                Log.d(TAG, "validateCredentials: 4")
+                                it.body()?.let { newToken ->
+                                    Log.d(TAG, "validateCredentials: 5")
+                                    onRefreshToken(newToken)
+                                }
+                            } else {
+                                Log.d(TAG, "validateCredentials: 6")
+                                onExpire()
                             }
-                        } else {
-                            Log.d(TAG, "validateCredentials: 6")
-                            onExpire()
                         }
                     }
+                    Log.d(TAG, "validateCredentials: ss ${response.raw()}")
+                } else {
+                    // no such token
+                    Log.d(TAG, "validateCredentials: 7")
+                    onExpire()
                 }
-                Log.d(TAG, "validateCredentials: ss ${response.raw()}")
-            } else {
-                // no such token
-                Log.d(TAG, "validateCredentials: 7")
-                onExpire()
+                Log.d(TAG, "validateCredentials: $response")
             }
-            Log.d(TAG, "validateCredentials: $response")
+        } catch (e: Exception) {
+            Log.e(TAG, "validateCredentials: ", e)
         }
     }
 
